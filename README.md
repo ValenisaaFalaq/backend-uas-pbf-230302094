@@ -1,68 +1,156 @@
-# CodeIgniter 4 Application Starter
+# Backend Rumah Sakit - CodeIgniter 4
 
-## What is CodeIgniter?
+Repositori ini berisi proyek **backend REST API** menggunakan **CodeIgniter 4** untuk sistem informasi rumah sakit. Sistem ini menyediakan endpoint API untuk mengelola data **pasien** dan **obat**, serta siap dikonsumsi oleh frontend (Laravel atau lainnya).
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+---
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+##  Fitur
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+- CRUD **Pasien** (Create, Read, Update, Delete)
+- CRUD **Obat**
+- REST API
+- Bisa diakses melalui frontend (Laravel, Postman)
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+---
 
-## Installation & updates
+##  Langkah Instalasi
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+### 1. Clone Project
+```bash
+git clone https://github.com/username/backend_rumahsakit.git
+cd backend_rumahsakit
+```
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+### 2. Install Dependency via Composer
+```bash
+composer install
+```
 
-## Setup
+### 3. Copy File .env
+```bash
+cp env .env
+```
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+### 4. Konfigurasi Database di `.env`
+```dotenv
+database.default.hostname = localhost
+database.default.database = db_rumahsakit_230302094
+database.default.username = root
+database.default.password =
+```
 
-## Important Change with index.php
+### 5. Jalankan Server
+```bash
+php spark serve
+```
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+---
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+## 🗂️ Struktur Folder
 
-**Please** read the user guide for a better explanation of how CI4 works!
+```
+backend_rumahsakit/
+├── app/
+│   ├── Controllers/
+│   │   ├── Pasien.php
+│   │   └── Obat.php
+│   ├── Models/
+│   │   ├── PasienModel.php
+│   │   └── ObatModel.php
+│   └── Config/
+│       └── Routes.php
+├── public/
+├── .env
+└── README.md
+```
 
-## Repository Management
+---
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+## Struktur Tabel MySQL
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+```sql
+CREATE DATABASE db_rumahsakit_230302094;
 
-## Server Requirements
+CREATE TABLE pasien (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nama VARCHAR(100),
+  alamat TEXT,
+  tanggal_lahir DATE,
+  jenis_kelamin ENUM('L', 'P'),
+  foto VARCHAR(255)
+);
 
-PHP version 8.1 or higher is required, with the following extensions installed:
+CREATE TABLE obat (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nama_obat VARCHAR(100),
+  kategori VARCHAR(50),
+  stok INT,
+  harga DECIMAL(10,2)
+);
+```
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+---
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - If you are still using PHP 7.4 or 8.0, you should upgrade immediately.
-> - The end of life date for PHP 8.1 will be December 31, 2025.
+## Routing API (app/Config/Routes.php)
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+```php
+$routes->resource('pasien');
+$routes->resource('obat');
+```
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+---
+
+## API Endpoint
+
+###  Pasien
+
+| Method | Endpoint       | Deskripsi              |
+|--------|----------------|------------------------|
+| GET    | /pasien        | Ambil semua pasien     |
+| GET    | /pasien/{id}   | Detail pasien tertentu |
+| POST   | /pasien        | Tambah pasien baru     |
+| PUT    | /pasien/{id}   | Ubah data pasien       |
+| DELETE | /pasien/{id}   | Hapus pasien           |
+
+### Obat
+
+| Method | Endpoint     | Deskripsi            |
+|--------|--------------|----------------------|
+| GET    | /obat        | Ambil semua obat     |
+| GET    | /obat/{id}   | Detail obat tertentu |
+| POST   | /obat        | Tambah data obat     |
+| PUT    | /obat/{id}   | Ubah data obat       |
+| DELETE | /obat/{id}   | Hapus obat           |
+
+---
+
+---
+
+## Testing API (Postman)
+
+### Pasien
+
+- `GET /pasien`
+- `POST /pasien`  
+  Body:
+  ```json
+  {
+    "nama": "Rizky",
+    "alamat": "Cilacap",
+    "tanggal_lahir": "2000-01-01",
+    "jenis_kelamin": "L"
+  }
+  ```
+- `PUT /pasien/{id}`
+- `DELETE /pasien/{id}`
+
+### Obat
+
+- `GET /obat`
+- `POST /obat`
+- `PUT /obat/{id}`
+- `DELETE /obat/{id}`
+
+---
+
+
